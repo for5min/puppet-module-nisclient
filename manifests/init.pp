@@ -2,7 +2,7 @@
 #
 class nisclient(
   $domainname     = $::domain,
-  $server         = '127.0.0.1',
+  $server         = 'UNSET',
   $package_ensure = 'installed',
   $package_name   = 'USE_DEFAULTS',
   $service_ensure = 'running',
@@ -11,6 +11,7 @@ class nisclient(
 
   case $::kernel {
     'Linux': {
+      $server = '127.0.0.1'
       $default_service_name = 'ypbind'
       case $::osfamily {
         'RedHat': {
@@ -34,6 +35,7 @@ class nisclient(
       }
     }
     'SunOS': {
+      $server = 'localhost'
       $default_package_name = [ 'SUNWnisr',
                                 'SUNWnisu',
                               ]
