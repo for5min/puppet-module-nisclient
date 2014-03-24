@@ -2,16 +2,16 @@
 #
 class nisclient(
   $domainname     = $::domain,
-  $server         = 'UNSET',
+  $server         = 'USE_DEFAULTS',
   $package_ensure = 'installed',
   $package_name   = 'USE_DEFAULTS',
   $service_ensure = 'running',
   $service_name   = 'USE_DEFAULTS',
 ) {
-
+  if $::kernel 
   case $::kernel {
     'Linux': {
-      $server = '127.0.0.1'
+      $default_server = '127.0.0.1'
       $default_service_name = 'ypbind'
       case $::osfamily {
         'RedHat': {
@@ -35,7 +35,7 @@ class nisclient(
       }
     }
     'SunOS': {
-      $server = 'localhost'
+      $default_server = 'localhost'
       $default_package_name = [ 'SUNWnisr',
                                 'SUNWnisu',
                               ]
@@ -44,6 +44,12 @@ class nisclient(
     default: {
       fail("nisclient is only supported on Linux and Solaris kernels. Detected kernel is <${::kernel}>")
     }
+  }
+
+  if $server == 'USE_DEFAULTS' {
+    $my_server == $default_server
+  } else {
+    $my_server == '127.0.0.1'
   }
 
   if $service_name == 'USE_DEFAULTS' {
@@ -146,7 +152,7 @@ class nisclient(
         mode    => '0644',
         require => File["/var/yp/binding/${domainname}"],
         notify  => Exec['domainname'],
-        content => "${server}\n",
+        content => "${my_server}\n",
       }
 
       exec { 'domainname':
