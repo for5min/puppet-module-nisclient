@@ -8,7 +8,6 @@ class nisclient(
   $service_ensure = 'running',
   $service_name   = 'USE_DEFAULTS',
 ) {
-  if $::kernel 
   case $::kernel {
     'Linux': {
       $default_server = '127.0.0.1'
@@ -47,9 +46,9 @@ class nisclient(
   }
 
   if $server == 'USE_DEFAULTS' {
-    $my_server == $default_server
+    $my_server = $default_server
   } else {
-    $my_server == '127.0.0.1'
+    $my_server = $server
   }
 
   if $service_name == 'USE_DEFAULTS' {
